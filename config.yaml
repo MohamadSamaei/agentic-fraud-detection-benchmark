@@ -1,0 +1,24 @@
+paths:
+  train_data: db/fraudTrain.csv
+  test_data: db/fraudTest.csv
+
+model:
+  provider: "openrouter"       # google, openai, anthropic, groq
+  name: "deepseek/deepseek-v4.1-flash-1017"
+  xgb_estimators: 100
+  xgb_max_depth: 6
+  economic_threshold: 20
+
+benchmark:
+  hard_negatives_count: 200
+  api_delay_seconds: 0     
+  cost_per_1m_input: .02     # adjust according to the provider
+  cost_per_1m_output: .108   # adjust according to the provider
+  max_concurrency: 15
+
+business:
+  chargeback_fee: 25
+  profit_margin: .02
+  churn_penalty: 2.5
+  human_review_cost: 2.5
+  

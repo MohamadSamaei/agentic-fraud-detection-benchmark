@@ -1,0 +1,55 @@
+{
+    "metadata": {
+        "model_name": "google/gemini-2.5-flash-lite",
+        "provider": "openrouter",
+        "ml_threshold": 0.02,
+        "economic_threshold": 20,
+        "max_concurrency": 15,
+        "total_dataset_samples": 2345,
+        "evaluated_samples": 2345,
+        "skipped_samples": 0
+    },
+    "confusion_matrices": {
+        "baseline": {
+            "TP": 1920,
+            "FP": 200,
+            "TN": 0,
+            "FN": 225,
+            "Human_Reviews": 0,
+            "LLM_Calls": 0
+        },
+        "hybrid": {
+            "TP": 803,
+            "FP": 36,
+            "TN": 39,
+            "FN": 310,
+            "Human_Reviews": 1157,
+            "LLM_Calls": 3904,
+            "Input_Tokens": 4367047,
+            "Output_Tokens": 1508896,
+            "Total_Latency_Sec": 6310.409775257111
+        }
+    },
+    "operational_kpis": {
+        "baseline_auto_fn_rate_pct": 10.49,
+        "hybrid_auto_fn_rate_pct": 14.45,
+        "fp_reduction_pct": 82.0,
+        "human_review_rate_pct": 49.34,
+        "queue_fraud_rate_pct": 89.2
+    },
+    "engineering_metrics": {
+        "throughput_tpm": 822584.2,
+        "throughput_rpm": 546.53,
+        "avg_pure_llm_latency_sec": 1.616,
+        "total_execution_minutes": 7.14,
+        "api_delay_seconds": 0
+    },
+    "financial_roi_metrics": {
+        "baseline_total_cost_usd": 89735.036,
+        "hybrid_operational_cost_usd": 19609.3184,
+        "total_api_cost_usd": 1.0403,
+        "hybrid_total_cost_usd": 19610.3587,
+        "net_savings_usd": 70124.6773,
+        "roi_multiplier": 67411.5
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "processed_samples": 2345,
+    "total_samples": 2345,
+    "baseline_counters": {
+        "TP": 1920,
+        "FP": 200,
+        "TN": 0,
+        "FN": 225,
+        "Human_Reviews": 0,
+        "LLM_Calls": 0
+    },
+    "hybrid_counters": {
+        "TP": 840,
+        "FP": 47,
+        "TN": 26,
+        "FN": 195,
+        "Human_Reviews": 1237,
+        "LLM_Calls": 3854,
+        "Input_Tokens": 5118485,
+        "Output_Tokens": 6912604,
+        "Total_Latency_Sec": 29773.772871017456
+    },
+    "baseline_total_cost": 89735.03600000001,
+    "hybrid_total_cost": 16377.546000000004
+}

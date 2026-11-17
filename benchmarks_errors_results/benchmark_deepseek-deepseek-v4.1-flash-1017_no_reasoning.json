@@ -1,0 +1,55 @@
+{
+    "metadata": {
+        "model_name": "deepseek/deepseek-v4.1-flash-1017",
+        "provider": "openrouter",
+        "ml_threshold": 0.02,
+        "economic_threshold": 20,
+        "max_concurrency": 15,
+        "total_dataset_samples": 2345,
+        "evaluated_samples": 2345,
+        "skipped_samples": 0
+    },
+    "confusion_matrices": {
+        "baseline": {
+            "TP": 1920,
+            "FP": 200,
+            "TN": 0,
+            "FN": 225,
+            "Human_Reviews": 0,
+            "LLM_Calls": 0
+        },
+        "hybrid": {
+            "TP": 1002,
+            "FP": 54,
+            "TN": 30,
+            "FN": 227,
+            "Human_Reviews": 1032,
+            "LLM_Calls": 3424,
+            "Input_Tokens": 4395210,
+            "Output_Tokens": 1585873,
+            "Total_Latency_Sec": 9369.471081733704
+        }
+    },
+    "operational_kpis": {
+        "baseline_auto_fn_rate_pct": 10.49,
+        "hybrid_auto_fn_rate_pct": 10.58,
+        "fp_reduction_pct": 73.0,
+        "human_review_rate_pct": 44.01,
+        "queue_fraud_rate_pct": 88.76
+    },
+    "engineering_metrics": {
+        "throughput_tpm": 569354.9,
+        "throughput_rpm": 325.94,
+        "avg_pure_llm_latency_sec": 2.736,
+        "total_execution_minutes": 10.51,
+        "api_delay_seconds": 0
+    },
+    "financial_roi_metrics": {
+        "baseline_total_cost_usd": 89735.036,
+        "hybrid_operational_cost_usd": 18381.9072,
+        "total_api_cost_usd": 0.2592,
+        "hybrid_total_cost_usd": 18382.1664,
+        "net_savings_usd": 71352.8696,
+        "roi_multiplier": 275305.0
+    }
+}

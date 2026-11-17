@@ -1,0 +1,27 @@
+{
+    "processed_samples": 2345,
+    "total_samples": 2345,
+    "baseline_counters": {
+        "TP": 1920,
+        "FP": 200,
+        "TN": 0,
+        "FN": 225,
+        "Human_Reviews": 0,
+        "LLM_Calls": 0
+    },
+    "hybrid_counters": {
+        "TP": 1056,
+        "FP": 45,
+        "TN": 30,
+        "FN": 281,
+        "Human_Reviews": 933,
+        "LLM_Calls": 3969,
+        "Input_Tokens": 4135746,
+        "Output_Tokens": 7062037,
+        "Reviewer_Reasoning_Tokens": 3047044,
+        "Critic_Reasoning_Tokens": 2289403,
+        "Total_Latency_Sec": 38642.89589214325
+    },
+    "baseline_total_cost": 89735.03600000001,
+    "hybrid_total_cost": 27746.019399999994
+}

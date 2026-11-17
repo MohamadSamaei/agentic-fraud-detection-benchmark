@@ -54,8 +54,8 @@ flowchart TD
     D --> E
 
     E --> F{"Conditional Edge:<br/>should_run_critic"}
-    F -->|"Amount < $20 or<br/>High-Confidence Consensus"| H["Deterministic Policy Router<br/>final_routing + VIP Safeguard"]
-    F -->|"ML vs. Reviewer Disagreement,<br/>Uncertainty, or Low Confidence"| G["Critic Agent<br/>Counter-Evidence & Risk Audit"]
+    F -->|"Amount < $20 or<br/>High-Confidence Consensus"| H["Deterministic Policy Router<br/>final_routing + High-Value Safeguard"]
+    F -->|"ML vs. Reviewer Disagreement,<br/>High Uncertainty, or<br/>Low Confidence"| G["Critic Agent<br/>Counter-Evidence & Risk Audit"]
     G --> H
 
     H --> I(["auto_approve"])
@@ -78,7 +78,7 @@ In real-world credit card datasets (~0.5% fraud prevalence), random sampling eva
 * **2,145 Fraudulent Transactions (`is_fraud = 1`):** 100% of positive fraud cases in the test set.
 * **200 Hard-Negative Legitimate Transactions (`is_fraud = 0`):** Mined by ranking all legitimate test transactions by their baseline XGBoost fraud probability (`fraud_prob`) and selecting the **top 200 highest-scoring false-positive candidates**—the exact cases where a cost-tuned ML threshold (`0.02`) causes maximum customer churn.
 
-Five configurations across four LLMs were benchmarked asynchronously (`max_concurrency = 15`) via **OpenRouter** against the standalone XGBoost baseline:
+Five configurations across three LLMs were benchmarked asynchronously (`max_concurrency = 15`) via **OpenRouter** against the standalone XGBoost baseline:
 
 ---
 

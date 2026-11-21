@@ -83,7 +83,8 @@ Five configurations across three LLMs were benchmarked asynchronously (`max_conc
 ---
 
 ## 4. Benchmark Results & Engineering Telemetry
-
+![Total Cost and Net Savings Comparison](assets/cost_savings_comparison.png)
+![False Positive Reduction and Routing Breakdown](assets/fp_and_routing_breakdown.png)
 ### Decision Performance & Financial ROI
 
 | Model / Configuration | Upstream Provider | TP | FP | TN | FN | Human Reviews | FP Reduction | Net Savings (USD) | Nominal API Cost | ROI |

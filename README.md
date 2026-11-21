@@ -6,7 +6,7 @@
 ![OpenRouter](https://img.shields.io/badge/LLM%20Gateway-OpenRouter-6366F1)
 ![Dataset License](https://img.shields.io/badge/Dataset-Apache%202.0-green)
 
-A cost-sensitive financial fraud triage pipeline that pairs a gradient-boosted baseline (**XGBoost + TreeSHAP**) with an asynchronous multi-agent **LangGraph** workflow (**Reviewer** and **Critic** LLM agents) governed by a deterministic policy router.
+A cost-sensitive financial fraud detection pipeline that pairs a gradient-boosted baseline (**XGBoost + TreeSHAP**) with an asynchronous multi-agent **LangGraph** workflow (**Reviewer** and **Critic** LLM agents) governed by a deterministic policy router.
 
 Evaluated on **2,345 adversarial test transactions** (2,145 confirmed frauds and 200 hard-negative legitimate transactions), adding multi-agent contextual auditing reduces false-positive customer blocks by **61.5%–82.0%** and generates **$61,988–$73,357 in net operational savings** per batch at a nominal LLM inference cost of **$0.26–$1.04**.
 
@@ -25,9 +25,9 @@ Evaluated on **2,345 adversarial test transactions** (2,145 confirmed frauds and
 
 ## 1. Business Problem & Asymmetric Cost Structure
 
-In banking and payment processing, blocking or approving a transaction is not a symmetric binary classification task—errors carry vastly different unit-economic consequences. Tuning a standalone ML classifier for high fraud recall (`threshold = 0.02`) catches most fraud but triggers severe alert fatigue and legitimate customer churn.
+In banking and payment processing, blocking or approving a transaction is not a symmetric binary classification task—errors carry hugelu different consequences. Tuning a standalone ML classifier for high fraud recall (`threshold = 0.02`) catches most fraud but triggers severe false positives and legitimate customer churn.
 
-To align triage decisions with real-world banking economics, every routing outcome (`auto_approve`, `block`, or `human_review`) is evaluated against an asymmetric cost matrix:
+To align policy decisions with real-world banking economics, every routing outcome (`auto_approve`, `block`, or `human_review`) is evaluated against an asymmetric cost matrix:
 
 | Decision (`final_route`) | Ground Truth: Legitimate (`0`) | Ground Truth: Fraud (`1`) |
 | :--- | :--- | :--- |
@@ -39,23 +39,23 @@ To align triage decisions with real-world banking economics, every routing outco
 
 ## 2. System Architecture & Workflow
 
-The pipeline combines fast statistical scoring with targeted LLM auditing. Both **XGBoost** (enriched with top-2 **TreeSHAP** feature attributions) and the **Reviewer Agent** analyze the sanitized transaction context independently. To control latency and API spend, a cost-aware conditional edge (`should_run_critic`) escalates only contested, uncertain, or high-stakes transactions to the **Critic Agent** before the final deterministic policy router (`final_routing`) assigns an operational action.
+The pipeline combines fast statistical scoring with targeted LLM auditing. Both **XGBoost** (enriched with top-2 **TreeSHAP** feature attributions) and the **Reviewer Agent** analyze the sanitized transaction context independently. To control latency and API spend, a cost-aware conditional edge (`should_run_critic`) escalates only transactions where ML and reviewer disagree, uncertain cases, or high-stakes transactions to the **Critic Agent** before the final deterministic policy router (`final_routing`) assigns an operational action.
 
 > [!NOTE]
-> The routing thresholds (`economic_threshold = $20`, `ml_threshold = 0.02`, `critical_amount_threshold = $500`) were calibrated through iterative experimentation to balance automation rate against fraud recall. All thresholds are decoupled in `config.yaml` and can be reconfigured for different institutional risk appetites.
+> The routing thresholds (`economic_threshold = $20`, `ml_threshold = 0.02`, `critical_amount_threshold = $500`) were tuned by iterative experimentation to balance automation rate against fraud recall. All thresholds are in `config.yaml` and can be reset for different risk capacities.
 
 ```mermaid
 flowchart TD
-    A["Raw Transaction Data"] --> B["Causal Feature Engineering<br/>24h Rolling Velocity, Spend Z-Score & Kinematics"]
+    A["Raw Transaction Data"] --> B["Causal Feature Engineering<br>24h Rolling Velocity, Spend Z-Score & Kinematics"]
     B --> C["XGBoost Classifier + TreeSHAP"]
-    B --> D["Context Sanitizer<br/>Strip Label Prefixes & Format Payload"]
+    B --> D["Context Sanitizer<br>Strip Label Prefixes & Format Payload"]
 
-    C --> E["Reviewer Agent<br/>Structured Verdict & Confidence"]
+    C --> E["Reviewer Agent<br>Structured Verdict & Confidence"]
     D --> E
 
-    E --> F{"Conditional Edge:<br/>should_run_critic"}
-    F -->|"Amount < $20 or<br/>High-Confidence Consensus"| H["Deterministic Policy Router<br/>final_routing + High-Value Safeguard"]
-    F -->|"ML vs. Reviewer Disagreement,<br/>High Uncertainty, or<br/>Low Confidence"| G["Critic Agent<br/>Counter-Evidence & Risk Audit"]
+    E --> F{"Conditional Edge:<br>should_run_critic"}
+    F -->|"Amount under $20 or<br>High-Confidence Consensus"| H["Deterministic Policy Router<br>final_routing + High-Value Safeguard"]
+    F -->|"Disagreement, Uncertainty,<br>or Low Confidence"| G["Critic Agent<br>Counter-Evidence & Risk Audit"]
     G --> H
 
     H --> I(["auto_approve"])
@@ -66,14 +66,14 @@ flowchart TD
 ### Core Pipeline Components
 * **Causal Feature Engineering (`data_processor.py`):** Computes strictly historical per-card features using shifted expanding and 24-hour rolling windows (`velocity_24h`, `amount_24h`, `spend_ratio`, `amount_z_score`, merchant/category familiarity) alongside Haversine distance and implied travel velocity (`km/h`) to detect impossible travel anomalies without temporal leakage.
 * **Primary Reviewer Agent (`agent_core.py`):** Evaluates behavioral consistency using Pydantic-enforced structured outputs (`verdict`, `confidence`, `uncertainty_flag`, `evidence_list`, `rationale`).
-* **Secondary Critic Agent (`agent_core.py`):** Audits contested cases by cross-examining the transaction context, XGBoost probability, top SHAP drivers, and the Reviewer's rationale to surface counter-evidence or overlooked risk flags.
+* **Secondary Critic Agent (`agent_core.py`):** Audits contested cases by examining the transaction context, XGBoost probability, top SHAP drivers, and the Reviewer's rationale to discover counter-evidence or overlooked risk flags.
 * **Deterministic Policy Router (`final_routing`):** Synthesizes ML probability, hard kinematic/spend triggers (`travel_speed > 900 km/h`, `spend_ratio > 2.5`, `amount_24h > $1,000`), and agent verdicts into `auto_approve`, `block`, or `human_review`, including a safeguard preventing automated blocks on high-value VIP purchases without strong multi-signal consensus.
 
 ---
 
 ## 3. Experimental Setup & Hard-Negative Mining
 
-In real-world credit card datasets (~0.5% fraud prevalence), random sampling evaluates mostly trivial, low-value legitimate transactions that a baseline ML model already clears effortlessly. To stress-test the multi-agent system on the exact decision boundary where costly false positives occur, we constructed a concentrated **2,345-transaction adversarial benchmark** from the test split (~555k total transactions):
+In real-world credit card datasets (~0.5% fraud prevalence), random sampling is not a good idea because of having many low-value legitimate transactions that a baseline ML model detects easily. To test the real ability of the multi-agent system on the exact decision boundary where costly false positives occur, a concentrated **2,345-transaction adversarial benchmark** from the test split (~555k total transactions) is constructed:
 
 * **2,145 Fraudulent Transactions (`is_fraud = 1`):** 100% of positive fraud cases in the test set.
 * **200 Hard-Negative Legitimate Transactions (`is_fraud = 0`):** Mined by ranking all legitimate test transactions by their baseline XGBoost fraud probability (`fraud_prob`) and selecting the **top 200 highest-scoring false-positive candidates**—the exact cases where a cost-tuned ML threshold (`0.02`) causes maximum customer churn.
@@ -126,7 +126,7 @@ Five configurations across three LLMs were benchmarked asynchronously (`max_conc
 ## 5. Production Insights: Provider Routing & Test-Time Compute
 
 > [!IMPORTANT]
-> When deploying multi-agent pipelines through unified API aggregators such as **OpenRouter**, model weights are only part of the equation—the **upstream inference provider** directly governs quantization precision, output token behavior, latency, and real-world billing.
+> When deploying multi-agent pipelines through unified API aggregators such as **OpenRouter**, model weights are only part of the equation—the **upstream inference provider** directly determines the quantization precision, output token behavior, latency, and real-world billing.
 
 * **Provider-Dependent Quantization & Triage Shifts:** Comparing the two `low`-effort runs of `deepseek/deepseek-v4.1-flash-1017` across different upstream providers (`Wafer` vs. `SailResearch`) reveals substantial behavioral divergence on borderline transactions:
   * **`Wafer` (`low`):** Adopted an automation-heavy posture (`1,056` auto-blocks, `933` human reviews, `9.74s` latency, `$61,988.17` net savings).
